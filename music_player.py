@@ -5,7 +5,7 @@ import pandas as pd
 import bcrypt
 from PyQt6.QtWidgets import (
     QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout,
-    QStackedWidget, QMessageBox, QHBoxLayout, QComboBox
+    QStackedWidget, QMessageBox, QHBoxLayout, QComboBox, QListWidget, QListWidgetItem
 )
 from PyQt6.QtGui import (
     QRegularExpressionValidator
@@ -21,7 +21,8 @@ CREATE TABLE IF NOT EXISTS usuarios (
     usuario TEXT UNIQUE NOT NULL,
     senha TEXT NOT NULL,
     idade TEXT,
-    genero TEXT
+    genero TEXT,
+    preferencias_musicais TEXT
 )
 """)
 
@@ -187,14 +188,83 @@ class InformacoesPessoais(QWidget):
         idade = self.input_idade.text()
         genero = self.input_genero.currentText()
 
+        self.stack.widget(2).receber_dados(self.email, self.usuario, self.senha_hash, idade, genero)
+        self.stack.setCurrentIndex(2)
+
+
+class PreferenciasMusicais(QWidget):
+    def __init__(self, stack):
+        super().__init__()
+        self.stack = stack
+
+        self.email = ""
+        self.usuario = ""
+        self.senha_hash = ""
+        self.idade = ""
+        self.genero = ""
+
+        layout = QVBoxLayout()
+        self.label_preferenciamusical = QLabel("Selecione gêneros musicais que te agradam")
+        self.lista_preferenciamusical = QListWidget()
+        self.lista_preferenciamusical.setSelectionMode(QListWidget.SelectionMode.MultiSelection)
+
+        preferenciamusical = [
+            "Pop", "Alternativa", "Rock", "Hard Rock", "Metal", "Grunge", "Punk",
+            "Hip-Hop", "Rap", "Trap", "Lo-fi", "Eletrônica", "House", "Techno", "Trance",
+            "Drum and Bass", "Dubstep", "MPB", "Sertanejo", "Sertanejo Universitário",
+            "Forró", "Xote", "Baião", "Axé", "Samba", "Pagode", "Funk", "Funk Carioca",
+            "Jazz", "Blues", "Soul", "R&B", "Clássica", "Opera", "Reggae", "Ska",
+            "K-pop", "J-pop", "Anime", "Indie", "Indie Rock", "Indie Pop", "Gospel",
+            "Religiosa", "Country", "Folk", "Latina", "Reggaeton", "Cumbia", "Tango",
+            "Afrobeat", "World Music", "New Age", "Instrumental", "Experimental", "Outros"
+        ]
+
+        for generomusical in preferenciamusical:
+            item = QListWidgetItem(generomusical)
+            self.lista_preferenciamusical.addItem(item)
+
+        self.botao_confirmar = QPushButton("Finalizar Cadastro!")
+        self.botao_confirmar.clicked.connect(self.confirmar_preferencias)
+
+        layout.addWidget(self.label_preferenciamusical)
+        layout.addWidget(self.lista_preferenciamusical)
+        layout.addWidget(self.botao_confirmar)
+
+        self.setLayout(layout)
+
+    def receber_dados(self, email, usuario, senha_hash, idade, genero):
+        self.email = email
+        self.usuario = usuario
+        self.senha_hash = senha_hash
+        self.idade = idade
+        self.genero = genero
+
+    def confirmar_preferencias(self):
+        preferenciamusical_selecionados = ", ".join(
+            [item.text() for item in self.lista_preferenciamusical.selectedItems()])
+        print("Gêneros selecionados:", preferenciamusical_selecionados)
+
         try:
             with sqlite3.connect("usuarios.db") as conexao:
                 cur = conexao.cursor()
-                cur.execute("INSERT INTO usuarios (email, usuario, senha, idade, genero) VALUES (?, ?, ?, ?, ?)",
-                            (self.email, self.usuario, self.senha_hash, idade, genero))
+                cur.execute(
+                    "INSERT INTO usuarios (email, usuario, senha, idade, genero, preferencias_musicais) "
+                    "VALUES (?, ?, ?, ?, ?, ?)",
+                    (
+                        self.email,
+                        self.usuario,
+                        self.senha_hash,
+                        self.idade,
+                        self.genero,
+                        preferenciamusical_selecionados
+                    )
+                )
                 conexao.commit()
                 print("Conta criada com sucesso.")
+
+                # Chama a função de exportação para Excel aqui
                 self.exportar_para_excel(conexao)
+
         except Exception as e:
             print("Erro ao criar conta:", e)
             QMessageBox.warning(self, "Erro", "Não foi possível criar a conta.")
@@ -206,7 +276,7 @@ class InformacoesPessoais(QWidget):
     @staticmethod
     def exportar_para_excel(conexao):
         caminho_excel = os.path.join(os.getcwd(), "usuarios.xlsx")
-        df = pd.read_sql_query("SELECT id, email, usuario, idade, genero FROM usuarios", conexao)
+        df = pd.read_sql_query("SELECT id, email, usuario, idade, genero, preferencias_musicais FROM usuarios", conexao)
         df.to_excel(caminho_excel, index=False)
         print("Dados exportados para", caminho_excel)
 
@@ -220,6 +290,7 @@ class App(QWidget):
         self.stack = QStackedWidget(self)
         self.stack.addWidget(CriarConta(self.stack))
         self.stack.addWidget(InformacoesPessoais(self.stack))
+        self.stack.addWidget(PreferenciasMusicais(self.stack))
 
         layout = QVBoxLayout()
         layout.addWidget(self.stack)
