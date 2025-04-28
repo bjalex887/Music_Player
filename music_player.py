@@ -10,7 +10,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtGui import (
     QRegularExpressionValidator
 )
-from PyQt6.QtCore import QRegularExpression
+from PyQt6.QtCore import QRegularExpression, QDate
 
 conn = sqlite3.connect("usuarios.db")
 cursor = conn.cursor()
@@ -187,6 +187,24 @@ class InformacoesPessoais(QWidget):
     def confirmar_dados(self):
         idade = self.input_idade.text()
         genero = self.input_genero.currentText()
+
+        if not idade:
+            QMessageBox.warning(self, "Erro", "Por favor, insira sua data de nascimento.")
+            return
+
+        try:
+            dia, mes, ano = map(int, idade.split("/"))
+            data = QDate(ano, mes, dia)
+            if not data.isValid():
+                raise ValueError("Data inválida.")
+
+            if ano > QDate.currentDate().year():
+                QMessageBox.warning(self, "Erro", "Ano de nascimento não pode ser maior que o ano atual.")
+                return
+
+        except ValueError:
+            QMessageBox.warning(self, "Erro", "Data de nascimento inválida. Use o formato DD/MM/AA")
+            return
 
         self.stack.widget(2).receber_dados(self.email, self.usuario, self.senha_hash, idade, genero)
         self.stack.setCurrentIndex(2)
