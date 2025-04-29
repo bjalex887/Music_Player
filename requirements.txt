@@ -1,4 +1,3 @@
-PyQt6
-bcrypt
-pandas
-openpyxl
+PyQt6~=6.7.1
+pandas~=2.0.3
+bcrypt~=4.3.0
