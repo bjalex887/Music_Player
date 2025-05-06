@@ -1,0 +1,23 @@
+[33mcommit 758ea118700714256c2de34aa4d13dc5fc69dc11[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mano-data-de-nascimento[m[33m)[m
+Author: Taina Alves de Oliveira <kimyunaahaha@gmail.com>
+Date:   Tue Apr 29 18:53:39 2025 -0300
+
+    Modulação do código e alteração na validação de senha
+
+[33mcommit f8f166d3c31595d887c35052125013040ed92aff[m[33m ([m[1;31morigin/ano-data-de-nascimento[m[33m)[m
+Author: Taina Alves de Oliveira <kimyunaahaha@gmail.com>
+Date:   Mon Apr 28 12:58:54 2025 -0300
+
+    Ajuste nas permissões de data para data de nascimento
+
+[33mcommit 2d9af0d61c587c0899491711527cc27e6ce4c95a[m[33m ([m[1;31morigin/preferencias-musicais[m[33m, [m[1;32mpreferencias-musicais[m[33m)[m
+Author: Taina Alves de Oliveira <kimyunaahaha@gmail.com>
+Date:   Wed Apr 23 17:11:04 2025 -0300
+
+    Adicionado funcionalidade definir preferências musicais
+
+[33mcommit ba15b31fe1b0031964102c984974957622bdc291[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m
+Author: Taina Alves de Oliveira <kimyunaahaha@gmail.com>
+Date:   Wed Apr 9 09:57:44 2025 -0300
+
+    Base do projeto music player
