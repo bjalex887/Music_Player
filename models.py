@@ -6,6 +6,7 @@ import re
 
 def validar_email(email):
     regex = QRegularExpression(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+    print("validação de e-mail concluída.")
     return regex.match(email).hasMatch()
 
 
@@ -25,7 +26,7 @@ def validar_senha(senha: str) -> bool:
     # Verifica se há pelo menos um caractere especial
     if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", senha):
         return False
-    # Se passou por todas as verificações, a senha é válida
+    print("validação de senha concluída.")
     return True
 
 
@@ -35,8 +36,10 @@ def verificar_usuario_existente(email, usuario):
     cur.execute("SELECT * FROM usuarios WHERE email = ? OR usuario = ?", (email, usuario))
     usuario_existente = cur.fetchone()
     conexao.close()
+    print("verificação de usuário concluida.")
     return usuario_existente is not None
 
 
 def criptografar_senha(senha):
+    print("senha criptografada com sucesso")
     return bcrypt.hashpw(senha.encode(), bcrypt.gensalt()).decode()

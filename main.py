@@ -5,7 +5,6 @@ from ui.informacoes_pessoais import InformacoesPessoais
 from ui.preferencias_musicais import PreferenciasMusicais
 from db import criar_tabela_usuarios
 
-
 def main():
     # Inicializa a tabela de usuários no banco de dados
     criar_tabela_usuarios()
